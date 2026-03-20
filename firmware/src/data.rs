@@ -13,6 +13,19 @@ impl ImuData {
     /// Convert raw 16-bit readings into physical units.
     /// Assuming Accel range +/- 2g (16384 LSB/g)
     /// Assuming Gyro range +/- 250 deg/s (131 LSB/deg/s)
+    /// Returns gyroscope readings converted from deg/s to rad/s.
+    pub fn gyro_rad_s(&self) -> (f32, f32, f32) {
+        const DEG_TO_RAD: f32 = core::f32::consts::PI / 180.0;
+        (
+            self.gyro_x * DEG_TO_RAD,
+            self.gyro_y * DEG_TO_RAD,
+            self.gyro_z * DEG_TO_RAD,
+        )
+    }
+
+    /// Convert raw 16-bit readings into physical units.
+    /// Assuming Accel range +/- 2g (16384 LSB/g)
+    /// Assuming Gyro range +/- 250 deg/s (131 LSB/deg/s)
     pub fn from_raw(raw: &[u8; 14]) -> Self {
         let ax = i16::from_be_bytes([raw[0], raw[1]]) as f32 / 16384.0;
         let ay = i16::from_be_bytes([raw[2], raw[3]]) as f32 / 16384.0;

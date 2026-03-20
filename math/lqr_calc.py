@@ -22,11 +22,17 @@ def calculate_lqr_gain():
     """
 
     # --- Physical Parameters ---
-    # Replace these with your drone's actual measured values!
-    I_x = 0.01   # Moment of inertia around roll axis (kg*m^2)
-    I_y = 0.01   # Moment of inertia around pitch axis (kg*m^2)
-    I_z = 0.02   # Moment of inertia around yaw axis (kg*m^2) - typically larger
-    dt = 0.01    # Control loop timestep (100Hz)
+    # Motor: 2212 2200KV 6T Brushless Outrunner x4
+    # Frame: ~220mm (estimated from 2212 motor class)
+    # AUW:  ~500g (estimated with 3S 1300mAh LiPo)
+    # Props: 5x4.5" or 6x3"
+    #
+    # Moments of inertia (estimated for ~220mm X-frame, ~500g AUW)
+    # Measure these with bifilar pendulum for best results!
+    I_x = 0.0035  # Moment of inertia around roll axis (kg*m^2)
+    I_y = 0.0035  # Moment of inertia around pitch axis (kg*m^2)
+    I_z = 0.006   # Moment of inertia around yaw axis (kg*m^2) - typically ~2x roll/pitch
+    dt = 0.01     # Control loop timestep (100Hz)
 
     # --- Continuous-time Linearized State-Space Model ---
     # x_dot = A_cont * x + B_cont * u

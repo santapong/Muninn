@@ -1,5 +1,10 @@
 use embassy_rp::pwm::{Pwm, Config};
 
+/// Motor: 2212 2200KV 6T Brushless Outrunner DC
+/// - 4x motors in X-configuration
+/// - Each motor driven by its own ESC (4 separate ESCs)
+/// - ESC protocol: Standard PWM 50Hz, 1000-2000us pulse width
+///
 /// ESC pulse width constants (microseconds mapped to PWM compare values at 1MHz clock)
 pub const ESC_MIN: u16 = 1000;  // 1000us - motor off / minimum throttle
 pub const ESC_MAX: u16 = 2000;  // 2000us - maximum throttle

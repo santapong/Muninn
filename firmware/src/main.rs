@@ -23,8 +23,12 @@ bind_interrupts!(struct Irqs {
 /// Set to `true` to use LQR controller, `false` for PID.
 const USE_LQR: bool = false;
 
-/// Base throttle for hover (microseconds). Tune for your drone's weight/motors.
-const BASE_THROTTLE: f32 = 1200.0;
+/// Motor: 2212 2200KV 6T Brushless Outrunner
+/// - At 3S (11.1V): max ~24,420 RPM (no load)
+/// - Recommended prop: 5x4.5" or 6x3"
+/// - Typical hover throttle for ~500g quad: ~1150-1250us
+/// - ESC signal: standard PWM 1000-2000us at 50Hz
+const BASE_THROTTLE: f32 = 1180.0;
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
@@ -58,10 +62,14 @@ async fn main(_spawner: Spawner) {
     let mut attitude = ComplementaryFilter::new(0.98);
 
     // --- PID Controllers (Roll, Pitch, Yaw) ---
-    // Gains are scaffolded. Tune Kp/Ki/Kd for your specific drone.
-    let mut pid_roll = PidController::new(4.0, 0.02, 1.5, 50.0, 200.0);
-    let mut pid_pitch = PidController::new(4.0, 0.02, 1.5, 50.0, 200.0);
-    let mut pid_yaw = PidController::new(2.0, 0.01, 0.5, 30.0, 100.0);
+    // Tuned for 2212 2200KV motors with 5" props on ~500g frame.
+    // High KV motors are responsive — keep Kp moderate to avoid oscillation.
+    // Start with these values, then increase Kp until oscillation, back off 30%.
+    //
+    //                             Kp    Ki    Kd   i_lim  out_lim
+    let mut pid_roll  = PidController::new(3.5,  0.02, 1.8,  40.0,  180.0);
+    let mut pid_pitch = PidController::new(3.5,  0.02, 1.8,  40.0,  180.0);
+    let mut pid_yaw   = PidController::new(2.5,  0.01, 0.3,  25.0,   80.0);
 
     // --- LQR Controller (alternative) ---
     let lqr = LqrController::new();
